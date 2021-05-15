@@ -1,12 +1,13 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const colors = require('colors')
+const db = require('./config/db')
+const app = express()
 
 //Load vars
 dotenv.config({ path: './config/config.env' })
 
-const app = express()
-
+db()
 
 const PORT = process.env.PORT || 8000
 app.listen(PORT, () => {
