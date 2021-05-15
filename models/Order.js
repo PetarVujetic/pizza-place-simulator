@@ -38,6 +38,10 @@ const OrderSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Pizza status is not added'],
     enum: ['finished', 'pending']
+  },
+  createdAt: {
+    type: Date,
+    deault: Date.now
   }
 
 })
