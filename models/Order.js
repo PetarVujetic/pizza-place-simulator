@@ -48,8 +48,8 @@ const OrderSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    deault: Date.now
-  }
+    default: Date.now
+  },
 
 })
 
