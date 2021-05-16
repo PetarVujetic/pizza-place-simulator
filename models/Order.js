@@ -18,7 +18,7 @@ const OrderSchema = new mongoose.Schema({
 
   },
   phoneNumber: {
-    type: Number,
+    type: String,
     required: [true, 'Please add a phone number'],
     maxlength: [20, 'Phone number can not be longer than 20 digits']
   },
@@ -27,14 +27,16 @@ const OrderSchema = new mongoose.Schema({
     required: [true, 'Please add a pizza size'],
     enum: ['small', 'medium', 'large']
   },
-  ingredients: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Ingredient'
-  }],
+  ingredients: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Ingredient'
+    }],
   status: {
     type: String,
+    default: 'being made',
     required: [true, 'Pizza status is not added'],
-    enum: ['finished', 'pending']
+    enum: ['finished', 'being made']
   },
   createdAt: {
     type: Date,
