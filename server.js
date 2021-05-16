@@ -1,10 +1,18 @@
 const express = require('express')
+const errorHandler = require('./middlewares/error')
 const morgan = require('morgan')
 const dotenv = require('dotenv')
 const colors = require('colors')
 const dbConnect = require('./config/db')
 const app = express()
+
+//Load vars
+dotenv.config({ path: './config/config.env' })
+
 dbConnect()
+
+//Route files
+const publicRouter = require('./routes/public')
 
 //Body parser
 app.use(express.json())
@@ -15,9 +23,13 @@ if (process.env.NODE_ENV == "development") {
   app.use(morgan('dev'))
 }
 
-//Load vars
-dotenv.config({ path: './config/config.env' })
 
+
+//Mount routers
+app.use('/api/public', publicRouter)
+
+//Middlewares
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 8000
 
