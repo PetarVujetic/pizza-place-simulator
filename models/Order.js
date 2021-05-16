@@ -28,11 +28,8 @@ const OrderSchema = new mongoose.Schema({
     enum: ['small', 'medium', 'large']
   },
   ingredients: [{
-    ingredient: {
-      type: String,
-      required: false,
-      enum: ['cheese', 'tomato sauce', 'pepperoni', 'mushrooms', 'onions', 'pineapple', 'bacon', 'olives']
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ingredient'
   }],
   status: {
     type: String,
@@ -45,3 +42,5 @@ const OrderSchema = new mongoose.Schema({
   }
 
 })
+
+module.exports = mongoose.model('Order', OrderSchema)
