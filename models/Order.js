@@ -32,6 +32,14 @@ const OrderSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Ingredient'
     }],
+  price: {
+    type: Number,
+    required: true
+  },
+  time: {
+    type: Number,
+    required: true
+  },
   status: {
     type: String,
     default: 'being made',

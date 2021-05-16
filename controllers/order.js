@@ -4,29 +4,38 @@ const Order = require('../models/Order')
 const Ingredient = require('../models/Ingredient')
 const uniqueValues = require('../utils/uniqueValues')
 const numericCheck = require('../utils/numericCheck')
+const sizeAdjust = require('../utils/sizeAdjust')
 
+// @desc  Create an order
+//@route  POST /api/public/order
+//@access Public
 exports.postOrder = asyncHandler(async (req, res, next) => {
   const { firstName, lastName, address, phoneNumber, size } = req.body
-  let ingArray = []
+  let ingredients = []
+  let price = 0
+  let time = 0
+
+  //Returns time and price of the chosen size
+  const pizzaSize = sizeAdjust(size)
+  price += pizzaSize.price
+  time += pizzaSize.time
 
   //Check if phone number is all numeric
   if (!numericCheck(phoneNumber)) {
     return next(new ErrorResponse(`Phone number contains non numeric characters`, 400))
   }
 
-  const order = await Order.create({ firstName, lastName, address, phoneNumber, size })
-
   //Add ingredients to an array that turns unique
   for (const item of req.body.ingredients) {
     const ingredient = await Ingredient.findOne({ name: item })
-    ingArray.push(ingredient.id)
+    ingredients.push(ingredient.id)
   }
 
   //Makes array unique
-  ingArray = ingArray.filter(uniqueValues)
+  ingredients = ingredients.filter(uniqueValues)
 
-  order.ingredients = ingArray
-  order.save()
+  //Create order
+  const order = await Order.create({ firstName, lastName, address, phoneNumber, size, ingredients, price, time })
 
   res.status(200).json({
     success: true,
@@ -35,6 +44,9 @@ exports.postOrder = asyncHandler(async (req, res, next) => {
 })
 
 
+// @desc  Get an order
+//@route  GET /api/public/order/:id
+//@access Public
 exports.checkOrder = asyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.id)
 
@@ -47,6 +59,10 @@ exports.checkOrder = asyncHandler(async (req, res, next) => {
   })
 })
 
+
+// @desc  Delete an order
+//@route  DELETE /api/public/order/:id
+//@access Public
 exports.deleteOrder = asyncHandler(async (req, res, next) => {
   const order = await Order.findByIdAndDelete(req.params.id)
   if (!order)
