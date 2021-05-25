@@ -8,11 +8,12 @@ const app = express()
 
 //Load vars
 dotenv.config({ path: './config/config.env' })
+const PORT = process.env.PORT || 8000
 
 dbConnect()
 
-//Route files
-const publicRouter = require('./routes/public')
+//Middlewares
+app.use(errorHandler)
 
 //Body parser
 app.use(express.json())
@@ -23,15 +24,13 @@ if (process.env.NODE_ENV == "development") {
   app.use(morgan('dev'))
 }
 
+//Route files
+const publicRouter = require('./routes/public')
 
 
 //Mount routers
 app.use('/api/public', publicRouter)
 
-//Middlewares
-app.use(errorHandler)
-
-const PORT = process.env.PORT || 8000
 
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold);
