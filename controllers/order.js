@@ -17,30 +17,35 @@ exports.postOrder = asyncHandler(async (req, res, next) => {
       msg: "Come back later, we can not accept more orders at this time"
     })
 
-  const { firstName, lastName, address, phoneNumber, size } = req.body
+  const { contact, pizzas } = req.body
   let ingredients = []
   let price = 0
   let time = 0
 
-  //Returns time and price of the chosen size
-  const pizzaSize = sizeAdjust(size)
-  price += pizzaSize.price
-  time += pizzaSize.time
+
+  for (let i = 0; i < pizzas.length; i++) {
+    //Returns time and price of the chosen size
+    let pizzaSize = sizeAdjust(pizzas[i].size)
+    price += pizzaSize.price
+    time += pizzaSize.time
+
+    //Add ingredients to an array that turns unique
+    for (const ing of pizzas[i].ingredients.filter(uniqueValues)) {
+      const ingredient = await Ingredient.findOne({ name: ing })
+      time += ingredient.time
+      ingredients.push(ingredient.id)
+    }
+    pizzas[i].ingredients = ingredients
+  }
+
 
   //Check if phone number is all numeric
-  if (!numericCheck(phoneNumber)) {
+  if (!numericCheck(contact.phoneNumber)) {
     return next(new ErrorResponse(`Phone number contains non numeric characters`, 400))
   }
 
-  //Add ingredients to an array that turns unique
-  for (const item of req.body.ingredients.filter(uniqueValues)) {
-    const ingredient = await Ingredient.findOne({ name: item })
-    time += ingredient.time
-    ingredients.push(ingredient.id)
-  }
-
   //Create order
-  const order = await Order.create({ firstName, lastName, address, phoneNumber, size, ingredients, price, time })
+  const order = await Order.create({ contact, pizzas, price, time })
   queue += 1
 
 

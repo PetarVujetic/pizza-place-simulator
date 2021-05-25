@@ -35,21 +35,21 @@ const OrderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ingredient'
       }],
-    price: {
-      type: Number,
-      required: true
-    },
-    time: {
-      type: Number,
-      required: true
-    },
-    status: {
-      type: String,
-      default: 'being made',
-      required: [true, 'Pizza status is not added'],
-      enum: ['finished', 'being made']
-    },
   }],
+  price: {
+    type: Number,
+    required: true
+  },
+  time: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    default: 'being made',
+    required: [true, 'Pizza status is not added'],
+    enum: ['finished', 'being made']
+  },
   createdAt: {
     type: Date,
     default: Date.now
