@@ -5,13 +5,19 @@ const Ingredient = require('../models/Ingredient')
 const uniqueValues = require('../utils/uniqueValues')
 const numericCheck = require('../utils/numericCheck')
 const sizeAdjust = require('../utils/sizeAdjust')
-let queue = 0
+const Queue = require('../models/Queue')
 
 // @desc  Create an order
 //@route  POST /api/public/order
 //@access Public
 exports.postOrder = asyncHandler(async (req, res, next) => {
-  if (queue > 14)
+  let place
+  await Queue.estimatedDocumentCount((err, count) => {
+    if (err) return new ErrorResponse('Server could not get the document count', 500)
+    place = count
+  })
+
+  if (place > 14)
     return res.status(405).json({
       success: false,
       msg: "Come back later, we can not accept more orders at this time"
@@ -21,13 +27,15 @@ exports.postOrder = asyncHandler(async (req, res, next) => {
   let ingredients = []
   let price = 0
   let time = 0
+  let timeTotal = 0
 
 
   for (let i = 0; i < pizzas.length; i++) {
     //Returns time and price of the chosen size
     let pizzaSize = sizeAdjust(pizzas[i].size)
     price += pizzaSize.price
-    time += pizzaSize.time
+    time = pizzaSize.time
+    timeTotal += pizzaSize.time
 
     //Add ingredients to an array that turns unique
     for (const ing of pizzas[i].ingredients.filter(uniqueValues)) {
@@ -36,6 +44,7 @@ exports.postOrder = asyncHandler(async (req, res, next) => {
       ingredients.push(ingredient.id)
     }
     pizzas[i].ingredients = ingredients
+    pizzas[i].time = time
   }
 
 
@@ -45,14 +54,14 @@ exports.postOrder = asyncHandler(async (req, res, next) => {
   }
 
   //Create order
-  const order = await Order.create({ contact, pizzas, price, time })
-  queue += 1
+  const order = await Order.create({ contact, pizzas, price, timeTotal })
+  const queue = await Queue.create({ OrderId: order.id, time: timeTotal, place: place })
 
 
   res.status(200).json({
     success: true,
     id: order.id,
-    placeInQueue: queue,
+    placeInQueue: place,
     time: time
   })
 })

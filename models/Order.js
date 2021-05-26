@@ -35,12 +35,16 @@ const OrderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ingredient'
       }],
+    time: {
+      type: Number,
+      required: true
+    },
   }],
   price: {
     type: Number,
     required: true
   },
-  time: {
+  timeTotal: {
     type: Number,
     required: true
   },

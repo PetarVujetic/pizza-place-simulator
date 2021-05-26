@@ -5,6 +5,7 @@ const dotenv = require('dotenv')
 const colors = require('colors')
 const dbConnect = require('./config/db')
 const app = express()
+const Queue = require('./models/Queue')
 
 //Load vars
 dotenv.config({ path: './config/config.env' })
@@ -26,11 +27,11 @@ if (process.env.NODE_ENV == "development") {
 
 //Route files
 const publicRouter = require('./routes/public')
-
+const adminRouter = require('./routes/admin')
 
 //Mount routers
 app.use('/api/public', publicRouter)
-
+app.use('/api/admin', adminRouter)
 
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold);
