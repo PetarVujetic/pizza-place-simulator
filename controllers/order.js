@@ -13,7 +13,7 @@ const Queue = require('../models/Queue')
 exports.postOrder = asyncHandler(async (req, res, next) => {
   let place
   await Queue.estimatedDocumentCount((err, count) => {
-    if (err) return new ErrorResponse('Server could not get the document count', 500)
+    if (err) return next(new ErrorResponse('Server could not get the document count', 500))
     place = count
   })
 
